@@ -26,7 +26,7 @@ import {
 const RENOVATE_DEPENDENCY_UPDATE_REGEX =
   /^deps: update dependency (.*) to (v[^\s]*)(\s\(#\d+\))?$/m;
 
-const DEPENDABOT_DEPENDANCY_UPDATE_REGEX = 
+const DEPENDABOT_DEPENDENCY_UPDATE_REGEX = 
 /^deps: bump (.*) from [^\s]* to ([^\s]*)(\s\(#\d+\))?$/m;
 
 /**
@@ -89,7 +89,7 @@ export class DependencyManifest extends DefaultVersioningStrategy {
 }
 
 function matchCommit(commit:ConventionalCommit): RegExpMatchArray | null {
-  return commit.message.match(RENOVATE_DEPENDENCY_UPDATE_REGEX) || commit.message.match(DEPENDABOT_DEPENDANCY_UPDATE_REGEX);
+  return commit.message.match(RENOVATE_DEPENDENCY_UPDATE_REGEX) || commit.message.match(DEPENDABOT_DEPENDENCY_UPDATE_REGEX);
 }
 
 function buildDependencyUpdates(
