@@ -168,7 +168,7 @@ describe('DependencyManifest', () => {
     });
   });
 
-  describe('with a dependency update', () => {
+  describe('with a dependency update renovate format', () => {
     it('can bump a patch', async () => {
       const commits = [
         {
@@ -254,6 +254,109 @@ describe('DependencyManifest', () => {
         {
           sha: 'sha2',
           message: 'deps: update dependency foo to v4 (#1234)',
+          files: ['path1/file1.rb'],
+          type: 'fix',
+          scope: null,
+          bareMessage: 'some bugfix',
+          notes: [],
+          references: [],
+          breaking: false,
+        },
+      ];
+      const strategy = new DependencyManifest({
+        bumpMinorPreMajor: true,
+      });
+      const oldVersion = Version.parse('1.2.3');
+      const newVersion = await strategy.bump(oldVersion, commits);
+      expect(newVersion.toString()).to.equal('2.0.0');
+    });
+  });
+  describe('with a dependency update dependabot format', () => {
+    it('can bump a patch', async () => {
+      const commits = [
+        {
+          sha: 'sha2',
+          message: 'deps: bump foo from 4.5.5 to 4.5.6',
+          files: ['path1/file1.rb'],
+          type: 'fix',
+          scope: null,
+          bareMessage: 'some bugfix',
+          notes: [],
+          references: [],
+          breaking: false,
+        },
+      ];
+      const strategy = new DependencyManifest({});
+      const oldVersion = Version.parse('1.2.3');
+      const newVersion = await strategy.bump(oldVersion, commits);
+      expect(newVersion.toString()).to.equal('1.2.4');
+    });
+    it('can bump a minor', async () => {
+      const commits = [
+        {
+          sha: 'sha2',
+          message: 'deps: bump foo from 4.4.0 to 4.5.0',
+          files: ['path1/file1.rb'],
+          type: 'fix',
+          scope: null,
+          bareMessage: 'some bugfix',
+          notes: [],
+          references: [],
+          breaking: false,
+        },
+      ];
+      const strategy = new DependencyManifest({});
+      const oldVersion = Version.parse('1.2.3');
+      const newVersion = await strategy.bump(oldVersion, commits);
+      expect(newVersion.toString()).to.equal('1.3.0');
+    });
+    it('can bump a minor as a patch pre-major', async () => {
+      const commits = [
+        {
+          sha: 'sha2',
+          message: 'deps: bump foo from 4.5.3 to 4.5.4',
+          files: ['path1/file1.rb'],
+          type: 'fix',
+          scope: null,
+          bareMessage: 'some bugfix',
+          notes: [],
+          references: [],
+          breaking: false,
+        },
+      ];
+      const strategy = new DependencyManifest({
+        bumpPatchForMinorPreMajor: true,
+      });
+      const oldVersion = Version.parse('0.1.2');
+      const newVersion = await strategy.bump(oldVersion, commits);
+      expect(newVersion.toString()).to.equal('0.1.3');
+    });
+    it('can bump a major as a minor pre-major', async () => {
+      const commits = [
+        {
+          sha: 'sha2',
+          message: 'deps: bump foo from 3 to 4',
+          files: ['path1/file1.rb'],
+          type: 'fix',
+          scope: null,
+          bareMessage: 'some bugfix',
+          notes: [],
+          references: [],
+          breaking: false,
+        },
+      ];
+      const strategy = new DependencyManifest({
+        bumpMinorPreMajor: true,
+      });
+      const oldVersion = Version.parse('0.1.2');
+      const newVersion = await strategy.bump(oldVersion, commits);
+      expect(newVersion.toString()).to.equal('0.2.0');
+    });
+    it('can bump a major', async () => {
+      const commits = [
+        {
+          sha: 'sha2',
+          message: 'deps: bump foo from 3 to 4 (#1234)',
           files: ['path1/file1.rb'],
           type: 'fix',
           scope: null,
